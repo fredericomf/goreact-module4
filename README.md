@@ -232,6 +232,15 @@ yarn add styled-components
 ```
 
 NOTA: Para faciliar o desenvolvimento, instalar a extenção: vscode-styled-components [Julien Poissonnier]. Essa extenção vai dar um sintaxe highlighting nos styled components.
+NOTA: Toda vez que eu tiver que importar um estilo css de algum componente, importo no meu arquivo global.js
+
+### RC-SLIDER
+
+O slider utilizado no controle de volume do app
+
+```bash
+yarn add rc-slider
+```
 
 <!-- AGUARDANDO PRA VER SE NESSE MÓDULO O PROFESSOR UTILIZARÁ ALGO DAS INSTRUÇÕES ABAIXO -->
 <!--
