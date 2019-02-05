@@ -191,11 +191,14 @@ yarn add prop-types
 
 ### REACT-ROUTER-DOM
 
-Para roteamento REACT DOM
+Utilizado para roteamento em aplicações React.
 
 ```bash
 yarn add react-router-dom
 ```
+
+NOTA_ESTUDO: É o mais utilizado atualmente, embora hajam outros.
+NOTA_ESTUDO: Vide pasta /src/routes/index.js. A pasta é criada porque podemos ter diversos tipos de rotas, ex: rota para logado, rota para determinada diretiva, etc...
 
 ### REDUX-SAGA
 
@@ -242,6 +245,35 @@ O slider utilizado no controle de volume do app
 yarn add rc-slider
 ```
 
+### JSON-SERVER
+
+É um servidor REST API fake para quando estamos desenvolvendo.
+A documentação está disponível em https://github.com/typicode/json-server
+
+```bash
+yarn global add json-server
+```
+
+Se a instalação não der certo ("json-server: command not found"), rode:
+
+```bash
+ # npm install -g json-server
+```
+
+**Para rodar a API:**
+
+```bash
+json-server server.json -p 3001 -w -d 500
+```
+
+1. -p 3001: Porta onde a API rodará
+2. -w: Serve para observar alterações no arquivo server.json, e reiniciar a API caso ocorra alguma alteração.
+3. -d: Adiciona um delay às requisições (em ms).
+
+OBS: O arquivo server.json deve estar na raiz do projeto.
+
+NOTA_ESTUDO: Caso não funcione por causa da versão do node, estudo sobre o NVM (ele permite downgrade do node por projeto)
+
 <!-- AGUARDANDO PRA VER SE NESSE MÓDULO O PROFESSOR UTILIZARÁ ALGO DAS INSTRUÇÕES ABAIXO -->
 <!--
 
@@ -278,7 +310,7 @@ Baixe indo no menu "RELEASES" do github
 #### Instalar o plugin REACTOTRON-REACT-JS
 
 ```bash
-yarn add reactotron-react-js reactotron-redux
+yarn add reactotron-react-js reactotron-redux reactotron-redux-saga
 ```
 
 1. Criar uma pasta no projeto: '/src/config'
@@ -288,11 +320,13 @@ yarn add reactotron-react-js reactotron-redux
 ```javascript
 import Reactotron from "reactotron-react-js";
 import { reactotronRedux } from "reactotron-redux";
+import sagaPlugin from "reactotron-redux-saga";
 
 // NOTA_ESTUDO: Essa variável de ambiente é disponibilizada pelo react automaticamente. Assim sabemos em que ambiente estamos.
 if (process.env.NODE_ENV === "development") {
   const tron = Reactotron.configure()
     .use(reactotronRedux())
+    .use(sagaPlugin())
     .connect();
 
   tron.clear();
@@ -301,20 +335,6 @@ if (process.env.NODE_ENV === "development") {
 }
 ```
 
-4. Fazer as alterações no index.js do nosso store
+~~4. Fazer as alterações no index.js do nosso store~~
 
 5. Tenho que importar o arquivo reactotron.js da pasta config no meu App.js
-
-### REACTOTRON: PLUGIN PARA O SAGA
-
-Esse plugin serve para termos as informações do saga no nosso reactotron
-
-```bash
-yarn add reactotron-redux-saga -D
-```
-
-1. Deverão ser feitas alterações no arquivo reactotron.js. Consulte o código para ver.
-
-2. Também são feitas alterações em: /src/store/index.js. Consulte o código para ver.
-
-NOTA_ESTUDO: Não funcionou por enquanto. Vide nota no arquivo supracitado.
