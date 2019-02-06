@@ -3,6 +3,8 @@ import styled from "styled-components";
 // NOTA_ESTUDO: É o componente que é chamado para navegar entre as rotas
 import { Link } from "react-router-dom";
 
+import { Spinner } from "../../components/Loading/styles";
+
 export const Container = styled.div`
   display: flex;
   flex: 1;
@@ -12,6 +14,10 @@ export const Container = styled.div`
 
 export const Title = styled.h1`
   font-size: 48px;
+
+  ${Spinner} {
+    height: 24px;
+  }
 `;
 
 export const List = styled.div`

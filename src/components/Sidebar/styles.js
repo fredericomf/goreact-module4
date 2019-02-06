@@ -1,5 +1,8 @@
 import styled from "styled-components";
 
+// NOTA_ESTUDO: Importando o Spinner que é utilizado lá no Loading, eu consigo estilizar ele aqui.
+import { Spinner } from "../../components/Loading/styles";
+
 export const Container = styled.aside`
   background: #121212;
   color: #b3b3b3;
@@ -24,12 +27,15 @@ export const Nav = styled.ul`
   }
 
   li {
+    align-items: center;
+    display: flex;
+
     a {
       color: inherit;
       text-decoration: none;
       font-size: 13px;
       line-height: 32px;
-      font-weight: ${props => (props.main ? "bold" : "normal")}
+      font-weight: ${props => (props.main ? "bold" : "normal")};
 
       &:hover {
         color: #fff;
@@ -42,6 +48,11 @@ export const Nav = styled.ul`
       line-height: 22px;
       letter-spacing: 1.11px;
       font-weight: 300;
+    }
+
+    ${Spinner} {
+      height: 15px;
+      margin-left: 15px;
     }
   }
 `;

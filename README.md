@@ -187,7 +187,7 @@ Biblioteca para fazer tipagem no nosso código
 yarn add prop-types
 ```
 
-**Um exemplo pode ser encontrado em /src/TodoList.js**
+**Um exemplo pode ser encontrado em /components/Sidebar/index.js**
 
 ### REACT-ROUTER-DOM
 
@@ -273,6 +273,14 @@ json-server server.json -p 3001 -w -d 500
 OBS: O arquivo server.json deve estar na raiz do projeto.
 
 NOTA_ESTUDO: Caso não funcione por causa da versão do node, estudo sobre o NVM (ele permite downgrade do node por projeto)
+
+### AXIOS
+
+Para tratar requisições rest
+
+```bash
+yarn add axios
+```
 
 <!-- AGUARDANDO PRA VER SE NESSE MÓDULO O PROFESSOR UTILIZARÁ ALGO DAS INSTRUÇÕES ABAIXO -->
 <!--
