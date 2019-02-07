@@ -1,103 +1,134 @@
-import React from "react";
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
+import { Creators as PlaylistDetailsActions } from "../../store/ducks/playlistDetails"; // Importando ACTION CREATORS
+
+import Loading from "../../components/Loading";
 
 import { Container, Header, SongList } from "./styles";
 
 import ClockIcon from "../../assets/images/clock.svg";
 import PlusIcon from "../../assets/images/plus.svg";
 
-const Playlist = () => (
-  <Container>
-    <Header>
-      <img
-        src="https://www.radiotrindademania.com.br/files/2018/12/Urban-Assault-trailer-music-album-cover.jpg"
-        alt="playlist"
-      />
-      <div>
-        <span>PLAYLIST</span>
-        <h1>Rock Forever</h1>
-        <p>13 músicas</p>
-        <button>PLAY</button>
-      </div>
-    </Header>
+class Playlist extends Component {
+  static propTypes = {
+    match: PropTypes.shape({
+      params: PropTypes.shape({
+        id: PropTypes.number
+      })
+    }).isRequired,
+    getPlaylistDetailsRequest: PropTypes.func.isRequired,
+    playlistDetails: PropTypes.shape({
+      data: PropTypes.shape({
+        thumbnail: PropTypes.string,
+        title: PropTypes.string,
+        description: PropTypes.string,
+        songs: PropTypes.arrayOf(
+          PropTypes.shape({
+            id: PropTypes.number,
+            title: PropTypes.title,
+            author: PropTypes.string,
+            album: PropTypes.string
+          })
+        )
+      }),
+      loading: PropTypes.bool
+    }).isRequired
+  };
 
-    <SongList cellPadding={0} cellSpacing={0}>
-      <thead>
-        <th />
-        <th>Título</th>
-        <th>Artista</th>
-        <th>Álbum</th>
-        <th>
-          <img src={ClockIcon} alt="Duração" />
-        </th>
-      </thead>
+  componentDidMount() {
+    this.loadPlaylistDetails();
+  }
 
-      <tbody>
-        <tr>
-          <td>
-            <img src={PlusIcon} alt="Adicionar" />
-          </td>
-          <td>Papercut</td>
-          <td>Linkin Park</td>
-          <td>Hybrid Theory</td>
-          <td>3:27</td>
-        </tr>
-        <tr>
-          <td>
-            <img src={PlusIcon} alt="Adicionar" />
-          </td>
-          <td>Papercut</td>
-          <td>Linkin Park</td>
-          <td>Hybrid Theory</td>
-          <td>3:27</td>
-        </tr>
-        <tr>
-          <td>
-            <img src={PlusIcon} alt="Adicionar" />
-          </td>
-          <td>Papercut</td>
-          <td>Linkin Park</td>
-          <td>Hybrid Theory</td>
-          <td>3:27</td>
-        </tr>
-        <tr>
-          <td>
-            <img src={PlusIcon} alt="Adicionar" />
-          </td>
-          <td>Papercut</td>
-          <td>Linkin Park</td>
-          <td>Hybrid Theory</td>
-          <td>3:27</td>
-        </tr>
-        <tr>
-          <td>
-            <img src={PlusIcon} alt="Adicionar" />
-          </td>
-          <td>Papercut</td>
-          <td>Linkin Park</td>
-          <td>Hybrid Theory</td>
-          <td>3:27</td>
-        </tr>
-        <tr>
-          <td>
-            <img src={PlusIcon} alt="Adicionar" />
-          </td>
-          <td>Papercut</td>
-          <td>Linkin Park</td>
-          <td>Hybrid Theory</td>
-          <td>3:27</td>
-        </tr>
-        <tr>
-          <td>
-            <img src={PlusIcon} alt="Adicionar" />
-          </td>
-          <td>Papercut</td>
-          <td>Linkin Park</td>
-          <td>Hybrid Theory</td>
-          <td>3:27</td>
-        </tr>
-      </tbody>
-    </SongList>
-  </Container>
-);
+  componentDidUpdate(prevProps) {
+    if (prevProps.match.params.id !== this.props.match.params.id) {
+      this.loadPlaylistDetails();
+    }
+  }
 
-export default Playlist;
+  loadPlaylistDetails = () => {
+    const { id } = this.props.match.params;
+
+    this.props.getPlaylistDetailsRequest(id); // NOTA_ESTUDO: Essa action está dentro do nosso DUCK
+  };
+
+  renderDetails = () => {
+    const playlist = this.props.playlistDetails.data;
+
+    return (
+      <Container>
+        <Header>
+          <img src={playlist.thumbnail} alt={playlist.title} />
+          <div>
+            <span>PLAYLIST</span>
+            <h1>{playlist.title}</h1>
+
+            {!!playlist.songs && <p>{playlist.songs.length} músicas</p>}
+
+            <button>PLAY</button>
+          </div>
+        </Header>
+
+        <SongList cellPadding={0} cellSpacing={0}>
+          <thead>
+            <th />
+            <th>Título</th>
+            <th>Artista</th>
+            <th>Álbum</th>
+            <th>
+              <img src={ClockIcon} alt="Duração" />
+            </th>
+          </thead>
+
+          <tbody>
+            {!playlist.songs ? (
+              <tr>
+                <td colspan={5}>Nenhuma música cadastrada</td>
+              </tr>
+            ) : (
+              playlist.songs.map(song => (
+                <tr key={song.id}>
+                  <td>
+                    <img src={PlusIcon} alt="Adicionar" />
+                  </td>
+                  <td>{song.title}</td>
+                  <td>{song.author}</td>
+                  <td>{song.album}</td>
+                  <td>3:27</td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </SongList>
+      </Container>
+    );
+  };
+
+  render() {
+    return this.props.playlistDetails.loading ? (
+      <Container loading>
+        <Loading />
+      </Container>
+    ) : (
+      this.renderDetails()
+    );
+  }
+}
+
+// NOTA_ESTUDO: Mapeia uma propriedade do nosso REDUCER para as propriedades da nossa page. "state.playlistDetails" vem do REDUCER
+const mapStateToProps = state => ({
+  playlistDetails: state.playlistDetails
+});
+
+/**
+ * NOTA_ESTUDO: Isso fará com que cada função que temos no nosso PlaylistDetailsActions fique disponível na nossa page Playlist através de uma propriedade.
+ */
+const mapDispatchToProps = dispatch =>
+  bindActionCreators(PlaylistDetailsActions, dispatch);
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Playlist);

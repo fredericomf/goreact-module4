@@ -21,4 +21,8 @@ export const GlobalStyle = createGlobalStyle`
     text-rendering: optimizeLegibility;
     -wekit-font-smoothing: antialiased !important;
   }
+
+  button{
+    cursor: pointer;
+  }
 `;

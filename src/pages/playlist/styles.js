@@ -1,7 +1,22 @@
-import styled from "styled-components";
+import styled, { css } from "styled-components";
+
+import { Spinner } from "../../components/Loading/styles";
 
 export const Container = styled.div`
   margin-top: 30px;
+
+  ${Spinner} {
+    height: 48px;
+  }
+
+  ${props =>
+    props.loading &&
+    css`
+      align-items: center;
+      display: flex;
+      height: 100%;
+      justify-content: center;
+    `};
 `;
 
 export const Header = styled.header`

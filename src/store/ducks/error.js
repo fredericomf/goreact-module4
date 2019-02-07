@@ -1,23 +1,22 @@
 // NOTA_ESTUDO: Lembrar que um DUCK deve ser registrado no CombineReducers (index.js)
-// NOTA_ESTUDO: Aqui serão implementadas nossas Types, Reducer e ActionCreators das nossas playlists.
 
 export const Types = {
-  GET_REQUEST: "playlists/GET_REQUEST",
-  GET_SUCCESS: "playlists/GET_SUCCESS"
+  SET: "error/SET",
+  HIDE: "error/HIDE"
 };
 
 const INITIAL_STATE = {
-  data: [],
-  loading: false
+  visible: false,
+  message: null
 };
 
 // REDUCER:
 export default function playlists(state = INITIAL_STATE, action) {
   switch (action.type) {
-    case Types.GET_REQUEST:
-      return { ...state, loading: true };
-    case Types.GET_SUCCESS:
-      return { ...state, loading: false, data: action.payload.data };
+    case Types.SET:
+      return { ...state, visible: true, message: action.payload.message };
+    case Types.HIDE:
+      return { ...state, visible: false };
     default:
       return state;
   }
@@ -25,11 +24,10 @@ export default function playlists(state = INITIAL_STATE, action) {
 
 // ACTION CREATORS:
 export const Creators = {
-  getPlaylistsRequest: () => ({ type: Types.GET_REQUEST }),
+  setError: message => ({ type: Types.SET, payload: { message } }),
 
-  getPlaylistsSuccess: data => ({
-    type: Types.GET_SUCCESS,
-    payload: { data }
+  hideError: () => ({
+    type: Types.HIDE
   })
 };
 
