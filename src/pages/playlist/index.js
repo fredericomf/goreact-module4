@@ -4,10 +4,11 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import { Creators as PlaylistDetailsActions } from "../../store/ducks/playlistDetails"; // Importando ACTION CREATORS
+import { Creators as PlayerActions } from "../../store/ducks/player";
 
 import Loading from "../../components/Loading";
 
-import { Container, Header, SongList } from "./styles";
+import { Container, Header, SongList, SongItem } from "./styles";
 
 import ClockIcon from "../../assets/images/clock.svg";
 import PlusIcon from "../../assets/images/plus.svg";
@@ -35,7 +36,15 @@ class Playlist extends Component {
         )
       }),
       loading: PropTypes.bool
+    }).isRequired,
+    loadSong: PropTypes.func.isRequired,
+    currentSong: PropTypes.shape({
+      id: PropTypes.number
     }).isRequired
+  };
+
+  state = {
+    selectedSong: null
   };
 
   componentDidMount() {
@@ -85,11 +94,20 @@ class Playlist extends Component {
           <tbody>
             {!playlist.songs ? (
               <tr>
-                <td colspan={5}>Nenhuma música cadastrada</td>
+                <td colSpan={5}>Nenhuma música cadastrada</td>
               </tr>
             ) : (
               playlist.songs.map(song => (
-                <tr key={song.id}>
+                <SongItem
+                  key={song.id}
+                  onClick={() => this.setState({ selectedSong: song.id })}
+                  onDoubleClick={() => this.props.loadSong(song)}
+                  selected={this.state.selectedSong === song.id}
+                  playing={
+                    this.props.currentSong &&
+                    this.props.currentSong.id === song.id
+                  }
+                >
                   <td>
                     <img src={PlusIcon} alt="Adicionar" />
                   </td>
@@ -97,7 +115,7 @@ class Playlist extends Component {
                   <td>{song.author}</td>
                   <td>{song.album}</td>
                   <td>3:27</td>
-                </tr>
+                </SongItem>
               ))
             )}
           </tbody>
@@ -119,14 +137,16 @@ class Playlist extends Component {
 
 // NOTA_ESTUDO: Mapeia uma propriedade do nosso REDUCER para as propriedades da nossa page. "state.playlistDetails" vem do REDUCER
 const mapStateToProps = state => ({
-  playlistDetails: state.playlistDetails
+  playlistDetails: state.playlistDetails,
+  currentSong: state.player.currentSong
 });
 
 /**
- * NOTA_ESTUDO: Isso fará com que cada função que temos no nosso PlaylistDetailsActions fique disponível na nossa page Playlist através de uma propriedade.
+ * NOTA_ESTUDO: Isso fará com que cada função que temos no nosso PlaylistDetailsActions e PlayerActions fique disponível na nossa page Playlist através de uma propriedade.
+ * NOTA_ESTUDO: Usando o SpreadOperator (...) dizemos que queremos adicionar todas as actions. (Antes não era um Objeto como parâmetro do bindActionCreators)
  */
 const mapDispatchToProps = dispatch =>
-  bindActionCreators(PlaylistDetailsActions, dispatch);
+  bindActionCreators({ ...PlaylistDetailsActions, ...PlayerActions }, dispatch);
 
 export default connect(
   mapStateToProps,

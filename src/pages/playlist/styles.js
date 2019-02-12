@@ -82,25 +82,28 @@ export const SongList = styled.table`
       text-align: right;
     }
   }
+`;
 
-  tbody td {
+export const SongItem = styled.tr`
+  td {
+    background: ${props => (props.selected ? "#282828" : "transparent")};
     border-top: 1px solid #282828;
+    color: ${props => (props.playing ? "#1ED760" : "#FFF")};
     font-size: 13px;
     line-height: 40px;
     padding: 0 10px;
 
-    &:first-child{
+    &:first-child {
       text-align: right;
-      width; 80px;
+      width: 80px;
     }
 
-    &:last-child{
+    &:last-child {
       text-align: right;
     }
   }
 
-  tbody tr:hover td{
+  &:hover td {
     background: #282828;
   }
-
 `;

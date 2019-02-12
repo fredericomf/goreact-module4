@@ -245,6 +245,17 @@ O slider utilizado no controle de volume do app
 yarn add rc-slider
 ```
 
+### REACT-SOUND
+
+Plugin para manipulação de áudios
+
+```bash
+yarn add react-sound
+```
+
+NOTA_ESTUDO: Um exemplo de uso pode ser encontrado em: '/src/components/Player/index.js'
+NOTA_ESTUDO: Foi implementado um DUCK para trabalhar com este módulo (player.js)
+
 ### JSON-SERVER
 
 É um servidor REST API fake para quando estamos desenvolvendo.

@@ -20,6 +20,7 @@ import Routes from "./routes";
 import store from "./store";
 
 const App = () => (
+  // NOTA_ESTUDO: O Provider aqui, disponibiliza o nosso STORE por toda a aplicação. Qualquer componente ou page pode acessar os dados.
   <Provider store={store}>
     {/*
      * NOTA_ESTUDO: Se o BrowserRouter fosse colocado no nosso arquivo de ROUTES, só o componente Routes teria acesso
