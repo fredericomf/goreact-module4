@@ -1,9 +1,11 @@
-import React from "react";
+import React, { Fragment } from "react";
 import Slider from "rc-slider";
 import Sound from "react-sound";
 import PropTypes from "prop-types";
 
 import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
+import { Creators as PlayerActions } from "../../store/ducks/player";
 
 import {
   Container,
@@ -23,21 +25,29 @@ import PauseIcon from "../../assets/images/pause.svg";
 import ForwardIcon from "../../assets/images/forward.svg";
 import RepeatIcon from "../../assets/images/repeat.svg";
 
-const Player = ({ player }) => (
+const Player = ({ player, play, pause, prev, next }) => (
   <Container>
     {!!player.currentSong && (
-      <Sound url={player.currentSong.file} playStatus={player.status} />
+      <Sound
+        url={player.currentSong.file}
+        playStatus={player.status}
+        onFinishedPlaying={next}
+      />
     )}
 
     <Current>
-      <img
-        src="https://www.radiotrindademania.com.br/files/2018/12/Urban-Assault-trailer-music-album-cover.jpg"
-        alt="cover"
-      />
-      <div>
-        <span>Times like these</span>
-        <small>Foo Fighters</small>
-      </div>
+      {!!player.currentSong && (
+        <Fragment>
+          <img
+            src={player.currentSong.thumbnail}
+            alt={player.currentSong.title}
+          />
+          <div>
+            <span>{player.currentSong.title}</span>
+            <small>{player.currentSong.author}</small>
+          </div>
+        </Fragment>
+      )}
     </Current>
 
     <Progress>
@@ -45,13 +55,20 @@ const Player = ({ player }) => (
         <button>
           <img src={ShuffleIcon} alt="Shuffle" />
         </button>
-        <button>
+        <button onClick={prev}>
           <img src={BackwardIcon} alt="Backward" />
         </button>
-        <button>
-          <img src={PlayIcon} alt="Play" />
-        </button>
-        <button>
+        {!!player.currentSong && player.status === Sound.status.PLAYING ? (
+          // NOTA_ESTUDO: Quando o onClick pause é chamado o STATE: player.status é alterado e isso dispara uma REAÇÃO por parte do Sound (tag acima)
+          <button onClick={pause}>
+            <img src={PauseIcon} alt="Pause" />
+          </button>
+        ) : (
+          <button onClick={play}>
+            <img src={PlayIcon} alt="Play" />
+          </button>
+        )}
+        <button onClick={next}>
           <img src={ForwardIcon} alt="Forward" />
         </button>
         <button>
@@ -88,14 +105,27 @@ const Player = ({ player }) => (
 Player.propTypes = {
   player: PropTypes.shape({
     currentSong: PropTypes.shape({
+      thumbnail: PropTypes.string,
+      title: PropTypes.string,
+      author: PropTypes.string,
       file: PropTypes.string
     }),
     status: PropTypes.string
-  }).isRequired
+  }).isRequired,
+  play: PropTypes.func.isRequired,
+  pause: PropTypes.func.isRequired,
+  prev: PropTypes.func.isRequired,
+  next: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
   player: state.player
 });
 
-export default connect(mapStateToProps)(Player);
+const mapDispatchToProps = dispatch =>
+  bindActionCreators(PlayerActions, dispatch);
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Player);

@@ -101,7 +101,10 @@ class Playlist extends Component {
                 <SongItem
                   key={song.id}
                   onClick={() => this.setState({ selectedSong: song.id })}
-                  onDoubleClick={() => this.props.loadSong(song)}
+                  onDoubleClick={() =>
+                    // NOTA_ESTUDO: Passamos as músicas da playlist aqui para que o redux saiba qual a próxima música e a anterior
+                    this.props.loadSong(song, playlist.songs)
+                  }
                   selected={this.state.selectedSong === song.id}
                   playing={
                     this.props.currentSong &&
