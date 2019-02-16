@@ -7,13 +7,21 @@ export const Types = {
   PLAY: "player/PLAY",
   PAUSE: "player/PAUSE",
   NEXT: "player/NEXT",
-  PREV: "player/PREV"
+  PREV: "player/PREV",
+  PLAYING: "player/PLAYING",
+  HANDLE_POSITION: "player/HANDLE_POSITION",
+  SET_POSITION: "player/SET_POSITION",
+  SET_VOLUME: "player/SET_VOLUME"
 };
 
 const INITIAL_STATE = {
   currentSong: null,
   list: [],
-  status: Sound.status.PLAYING
+  status: Sound.status.PLAYING,
+  position: null,
+  positionShown: null,
+  duration: null,
+  volume: 100
 };
 
 // REDUCER:
@@ -24,7 +32,8 @@ export default function player(state = INITIAL_STATE, action) {
         ...state,
         currentSong: action.payload.song,
         list: action.payload.list,
-        status: Sound.status.PLAYING
+        status: Sound.status.PLAYING,
+        position: 0
       };
     case Types.PLAY:
       return {
@@ -49,7 +58,12 @@ export default function player(state = INITIAL_STATE, action) {
 
       // Só altero a música atual se existe alguma anterior
       if (prev) {
-        return { ...state, currentSong: prev, status: Sound.status.PLAYING };
+        return {
+          ...state,
+          currentSong: prev,
+          status: Sound.status.PLAYING,
+          position: 0
+        };
       }
 
       return state;
@@ -61,11 +75,35 @@ export default function player(state = INITIAL_STATE, action) {
       const next = state.list[currentIndex + 1];
 
       if (next) {
-        return { ...state, currentSong: next, status: Sound.status.PLAYING };
+        return {
+          ...state,
+          currentSong: next,
+          status: Sound.status.PLAYING,
+          position: 0
+        };
       }
 
       return state;
     }
+    case Types.PLAYING:
+      return { ...state, ...action.payload }; // NOTA_ESTUDO: '...' informa que queremos incluir todo o conteúdo da variável a frente: '...action.payload' = '{position, duration}'
+
+    case Types.HANDLE_POSITION:
+      return {
+        ...state,
+        positionShown: state.duration * action.payload.percent
+      };
+    case Types.SET_POSITION:
+      return {
+        ...state,
+        position: state.duration * action.payload.percent,
+        positionShown: null
+      };
+    case Types.SET_VOLUME:
+      return {
+        ...state,
+        volume: action.payload.volume
+      };
     default:
       return state;
   }
@@ -74,8 +112,27 @@ export default function player(state = INITIAL_STATE, action) {
 // ACTION CREATORS:
 export const Creators = {
   loadSong: (song, list) => ({ type: Types.LOAD, payload: { song, list } }),
-  play: song => ({ type: Types.PLAY }),
-  pause: song => ({ type: Types.PAUSE }),
-  prev: song => ({ type: Types.PREV }),
-  next: song => ({ type: Types.NEXT })
+  play: () => ({ type: Types.PLAY }),
+  pause: () => ({ type: Types.PAUSE }),
+  prev: () => ({ type: Types.PREV }),
+  next: () => ({ type: Types.NEXT }),
+  playing: ({ position, duration }) => ({
+    type: Types.PLAYING,
+    payload: { position, duration }
+  }),
+
+  handlePosition: percent => ({
+    type: Types.HANDLE_POSITION,
+    payload: { percent }
+  }),
+
+  setPosition: percent => ({
+    type: Types.SET_POSITION,
+    payload: { percent }
+  }),
+
+  setVolume: volume => ({
+    type: Types.SET_VOLUME,
+    payload: { volume }
+  })
 };

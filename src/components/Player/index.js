@@ -25,13 +25,30 @@ import PauseIcon from "../../assets/images/pause.svg";
 import ForwardIcon from "../../assets/images/forward.svg";
 import RepeatIcon from "../../assets/images/repeat.svg";
 
-const Player = ({ player, play, pause, prev, next }) => (
+const Player = ({
+  player,
+  play,
+  pause,
+  prev,
+  next,
+  playing,
+  position,
+  duration,
+  handlePosition,
+  setPosition,
+  positionShown,
+  progress,
+  setVolume
+}) => (
   <Container>
     {!!player.currentSong && (
       <Sound
         url={player.currentSong.file}
         playStatus={player.status}
         onFinishedPlaying={next}
+        onPlaying={playing} // NOTA_ESTUDO: Essa ação é chamada à cada segundo.
+        position={player.position}
+        volume={player.volume}
       />
     )}
 
@@ -77,15 +94,21 @@ const Player = ({ player, play, pause, prev, next }) => (
       </Controls>
 
       <Time>
-        <span>1:39</span>
+        <span>{positionShown || position}</span>
         <ProgressSlider>
           <Slider
             railStyle={{ background: "#404040", borderRadius: "10" }}
             trackStyle={{ background: "#1ED760" }}
             handleStyle={{ border: 0 }}
+            max={1000}
+            onChange={value => {
+              handlePosition(value / 1000);
+            }}
+            onAfterChange={value => setPosition(value / 1000)}
+            value={progress}
           />
         </ProgressSlider>
-        <span>4:24</span>
+        <span>{duration}</span>
       </Time>
     </Progress>
 
@@ -96,7 +119,8 @@ const Player = ({ player, play, pause, prev, next }) => (
         railStyle={{ background: "#404040", borderRadius: "10" }}
         trackStyle={{ background: "#FFF" }}
         handleStyle={{ display: "none" }}
-        value={100}
+        value={player.volume}
+        onChange={setVolume}
       />
     </Volume>
   </Container>
@@ -110,16 +134,55 @@ Player.propTypes = {
       author: PropTypes.string,
       file: PropTypes.string
     }),
-    status: PropTypes.string
+    status: PropTypes.string,
+    volume: PropTypes.number.isRequired
   }).isRequired,
   play: PropTypes.func.isRequired,
   pause: PropTypes.func.isRequired,
   prev: PropTypes.func.isRequired,
-  next: PropTypes.func.isRequired
+  next: PropTypes.func.isRequired,
+  playing: PropTypes.func.isRequired,
+  position: PropTypes.string,
+  positionShown: PropTypes.string,
+  duration: PropTypes.string,
+  handlePosition: PropTypes.func.isRequired,
+  setPosition: PropTypes.func.isRequired,
+  progress: PropTypes.number.isRequired,
+  setVolume: PropTypes.func.isRequired
 };
 
+/**
+ * NOTA_ESTUDO:
+ * As propriedades de posição e duração da música são passadas em milisegundos, para exibir precisamos formatar.
+ *
+ * Com o problema acima proposto, cabem as seguintes observações:
+ * 1. Não é recomendável formatar direto no REDUX e salvar a propriedade assim.
+ * 2. Não é recomendável formatar diretamente no 'render' do componente.
+ *
+ * Solução:
+ * Implementar um método para formatação e formatar as propriedades em mapStateToProps
+ *
+ *
+ */
+function msToTime(duration) {
+  if (!duration) return null;
+
+  let seconds = parseInt((duration / 1000) % 60, 10);
+  const minutes = parseInt((duration / (1000 * 60)) % 60, 10);
+
+  seconds = seconds < 10 ? `0${seconds}` : seconds;
+
+  return `${minutes}:${seconds}`;
+}
+
 const mapStateToProps = state => ({
-  player: state.player
+  player: state.player,
+  position: msToTime(state.player.position),
+  duration: msToTime(state.player.duration),
+  positionShown: msToTime(state.player.positionShown),
+  progress:
+    (state.player.positionShown || state.player.position) *
+    (1000 / state.player.duration)
 });
 
 const mapDispatchToProps = dispatch =>
